@@ -15,7 +15,7 @@ post(notificationUrl, {
     password: process.env.TWILIO_AUTH_TOKEN
   },
   form: { 
-    Identity: process.argv.slice(2), 
+    Identity: '' + process.argv.slice(2), 
     Body: 'Hello, ' + process.argv.slice(2) + '!'
   }
 }, function(err, httpResponse, body) {
