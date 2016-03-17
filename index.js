@@ -36,10 +36,10 @@ app.post('/register', function(request, response) {
       password: process.env.TWILIO_AUTH_TOKEN
     },
     form: {
-      Endpoint: req.body.endpoint, 
-      Identity: req.body.identity,
-      BindingType: req.body.BindingType,
-      Address: req.body.Address
+      Endpoint: request.body.endpoint, 
+      Identity: request.body.identity,
+      BindingType: request.body.BindingType,
+      Address: request.body.Address
     }
   }, function(err, httpResponse, body) {
     var message = 'Binding created!';
