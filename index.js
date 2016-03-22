@@ -1,10 +1,9 @@
-require('dotenv').load();
-
 var http = require('http');
 var express = require('express');
 var util = require('util');
 var bodyParser = require('body-parser');
 var post = require('request').post;
+var env = require('./config.json');
 
 // Twilio User Notifications Service Endpoint
 var notificationsUrl = 'https://notifications.twilio.com/v1';
@@ -17,23 +16,23 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // correctly
 app.get('/', function(request, response) {
   response.render('index.jade', {
-    TWILIO_ACCOUNT_SID: process.env.TWILIO_ACCOUNT_SID,
-    TWILIO_AUTH_TOKEN: process.env.TWILIO_AUTH_TOKEN,
-    TWILIO_NOTIFICATION_SERVICE_SID: process.env.TWILIO_NOTIFICATION_SERVICE_SID,
-    TWILIO_CREDENTIAL_SID: process.env.TWILIO_CREDENTIAL_SID
+    TWILIO_ACCOUNT_SID: env.TWILIO_ACCOUNT_SID,
+    TWILIO_AUTH_TOKEN: env.TWILIO_AUTH_TOKEN,
+    TWILIO_NOTIFICATION_SERVICE_SID: env.TWILIO_NOTIFICATION_SERVICE_SID,
+    TWILIO_CREDENTIAL_SID: env.TWILIO_CREDENTIAL_SID
   });
 });
 
 //Create a binding using device properties
 app.post('/register', function(request, response) {
   var bindingsUrl = notificationsUrl + '/Services/' 
-    + process.env.TWILIO_NOTIFICATION_SERVICE_SID + '/Bindings';
+    + env.TWILIO_NOTIFICATION_SERVICE_SID + '/Bindings';
 
   // Create a device binding for the connecting client
   post(bindingsUrl, {
     auth: {
-      username: process.env.TWILIO_ACCOUNT_SID,
-      password: process.env.TWILIO_AUTH_TOKEN
+      username: env.TWILIO_ACCOUNT_SID,
+      password: env.TWILIO_AUTH_TOKEN
     },
     form: {
       Endpoint: request.body.endpoint, 
