@@ -13,13 +13,7 @@ Twilio Notification_Service SID | Use the create_service.js script to generate t
 
 # Setting up the Node.js Application
 
-Create a configuration file for your application:
-
-```bash
-cp .env.example .env
-```
-
-Edit `.env` with the four configuration parameters we gathered from above.
+Edit the `config.json` file with the four configuration parameters we gathered from above.
 
 Next, we need to install our dependencies from npm:
 
