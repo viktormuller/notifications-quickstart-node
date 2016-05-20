@@ -6,7 +6,7 @@ var twilio = require('twilio');
 
 // Create Express Webapp
 var app = express();
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 
 // Basic health check - check environment variables have been configured
 // correctly
