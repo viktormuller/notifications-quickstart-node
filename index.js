@@ -1,16 +1,12 @@
 var http = require('http');
 var express = require('express');
-var util = require('util');
 var bodyParser = require('body-parser');
-var post = require('request').post;
 var env = require('./config.json');
-
-// Twilio User Notifications Service Endpoint
-var notificationsUrl = 'https://notifications.twilio.com/v1';
+var twilio = require('twilio');
 
 // Create Express Webapp
 var app = express();
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 
 // Basic health check - check environment variables have been configured
 // correctly
@@ -19,42 +15,42 @@ app.get('/', function(request, response) {
     TWILIO_ACCOUNT_SID: env.TWILIO_ACCOUNT_SID,
     TWILIO_AUTH_TOKEN: env.TWILIO_AUTH_TOKEN,
     TWILIO_NOTIFICATION_SERVICE_SID: env.TWILIO_NOTIFICATION_SERVICE_SID,
-    TWILIO_CREDENTIAL_SID: env.TWILIO_CREDENTIAL_SID
+    TWILIO_APN_CREDENTIAL_SID: env.TWILIO_APN_CREDENTIAL_SID,
+    TWILIO_GCM_CREDENTIAL_SID: env.TWILIO_GCM_CREDENTIAL_SID
   });
 });
 
 //Create a binding using device properties
 app.post('/register', function(request, response) {
-  var bindingsUrl = notificationsUrl + '/Services/' 
-    + env.TWILIO_NOTIFICATION_SERVICE_SID + '/Bindings';
+  
+  // Authenticate with Twilio
+  var client = new twilio(env.TWILIO_ACCOUNT_SID,  env.TWILIO_AUTH_TOKEN);
+  
+  // Get a reference to the user notification service instance
+  var service = client.notifications.v1.services(env.TWILIO_NOTIFICATION_SERVICE_SID);
 
-  // Create a device binding for the connecting client
-  post(bindingsUrl, {
-    auth: {
-      username: env.TWILIO_ACCOUNT_SID,
-      password: env.TWILIO_AUTH_TOKEN
-    },
-    form: {
-      Endpoint: request.body.endpoint, 
-      Identity: request.body.identity,
-      BindingType: request.body.BindingType,
-      Address: request.body.Address
-    }
-  }, function(err, httpResponse, body) {
+  service.bindings.create({
+    "endpoint": request.body.endpoint,
+    "identity": request.body.identity,
+    "bindingType": request.body.BindingType,
+    "address": request.body.Address
+  }).then(function(binding) {
     var message = 'Binding created!';
-    if (err) {
-      message = 'Failed to create binding.'
-      console.log(message);
-      console.log(err);
-    }
-
-    // Send a JSON response indicating success or failure
+    console.log(binding);
+    // Send a JSON response indicating success
     response.send({
-      success: err,
+      message: message
+    });
+  }).catch(function(error) {
+    var message = 'Failed to create binding: ' + error;
+    console.log(message);
+    
+    // Send a JSON response indicating an internal server error
+    response.status(500).send({
+      error: error,
       message: message
     });
   });
-
 });
 
 // Start HTTP server
