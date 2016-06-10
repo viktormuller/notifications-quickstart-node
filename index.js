@@ -1,7 +1,7 @@
 var http = require('http');
 var express = require('express');
 var bodyParser = require('body-parser');
-var env = require('./config.json');
+var env = require('./config.js');
 var twilio = require('twilio');
 
 // Create Express Webapp

@@ -1,4 +1,4 @@
-var env = require('./config.json');
+var env = require('./config.js');
 var twilio = require('twilio');
 
 // Authenticate with Twilio
