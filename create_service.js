@@ -23,7 +23,7 @@ if (env.TWILIO_GCM_CREDENTIAL_SID != "") {
   console.log("No GCM Credentials configured - add in config.js, if available.")
 }
 
-client.notifications.v1.services.create(serviceData).then(function(response) {
+client.notify.v1.services.create(serviceData).then(function(response) {
   console.log(response);
 }).catch(function(error) {
   console.log(error);

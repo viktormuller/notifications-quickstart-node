@@ -28,7 +28,7 @@ app.post('/register', function(request, response) {
   var client = new twilio(env.TWILIO_ACCOUNT_SID,  env.TWILIO_AUTH_TOKEN);
   
   // Get a reference to the user notification service instance
-  var service = client.notifications.v1.services(env.TWILIO_NOTIFICATION_SERVICE_SID);
+  var service = client.notify.v1.services(env.TWILIO_NOTIFICATION_SERVICE_SID);
 
   service.bindings.create({
     "endpoint": request.body.endpoint,
