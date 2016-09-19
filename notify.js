@@ -5,7 +5,7 @@ var twilio = require('twilio');
 var client = new twilio(env.TWILIO_ACCOUNT_SID,  env.TWILIO_AUTH_TOKEN);
 
 // Create a reference to the user notification service
-var service = client.notifications.v1.services(env.TWILIO_NOTIFICATION_SERVICE_SID);
+var service = client.notify.v1.services(env.TWILIO_NOTIFICATION_SERVICE_SID);
 
 // Send a notification 
 service.notifications.create({
