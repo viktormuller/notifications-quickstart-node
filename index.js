@@ -24,12 +24,41 @@ app.get('/', function(request, response) {
   });
 });
 
-function createBinding(identity, endpoint, bindingType, address, response){
+function createBinding(identity, endpoint, bindingType, address, sandbox, response){
   // Authenticate with Twilio
   var client = new twilio(env.TWILIO_ACCOUNT_SID,  env.TWILIO_AUTH_TOKEN);
 
   // Get a reference to the user notification service instance
   var service = client.notify.v1.services(env.TWILIO_NOTIFICATION_SERVICE_SID);
+
+  // For APNS bindings let's check if the app's provisioning profile is aligned with that of the configured certificate.
+  //TODO: Please, refactor if necessary to reflect JS best practices
+  if (bindingType === "apn"){
+    var apnCredMatched = false;
+    service.fetch().then(function(serviceObj){
+      client.notify.v1.credentials(serviceObj.apnCredentialSid).fetch()
+      .then(function(credential){
+        if (credential.sandbox !== sandbox){
+          var message = "Mismatched APNS certificate. Make sure you are using a production certificate with production provisioning profile and a development certificate with a development provisioning profile.";
+          console.log(message);
+          console.log("Credential's sandbox value: " + credential.sandbox);
+          console.log("App's sandbox value: " + sandbox);
+          response.status(400).send({
+            message: message
+          });
+        } else{
+          apnCredMatched = true;
+        }
+      }).catch(function(error){
+        console.log(error);
+      });
+    }).catch(function (error){
+      console.log(error);
+    });
+    if (!apnCredMatched){
+      return;
+    }
+  }
 
   service.bindings.create({
     "endpoint": endpoint,
@@ -57,7 +86,7 @@ function createBinding(identity, endpoint, bindingType, address, response){
 
 //Create a binding using device properties
 app.post('/register', function(request, response) {
-  createBinding(request.body.identity, request.body.endpoint, request.body.BindingType, request.body.Address, response);
+  createBinding(request.body.identity, request.body.endpoint, request.body.BindingType, request.body.Address, request.body.Sandbox, response);
 });
 
 //Create a facebook-messenger binding based on the authentication webhook from Facebook
