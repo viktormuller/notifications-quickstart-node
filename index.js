@@ -24,7 +24,7 @@ app.get('/', function(request, response) {
   });
 });
 
-function createBinding(identity, endpoint, bindingType, address){
+function createBinding(identity, endpoint, bindingType, address, response){
   // Authenticate with Twilio
   var client = new twilio(env.TWILIO_ACCOUNT_SID,  env.TWILIO_AUTH_TOKEN);
 
@@ -57,7 +57,7 @@ function createBinding(identity, endpoint, bindingType, address){
 
 //Create a binding using device properties
 app.post('/register', function(request, response) {
-  createBinding(request.body.identity, request.body.endpoint, request.body.BindingType, request.body.Address);
+  createBinding(request.body.identity, request.body.endpoint, request.body.BindingType, request.body.Address, response);
 });
 
 //Create a facebook-messenger binding based on the authentication webhook from Facebook
@@ -73,7 +73,7 @@ app.post('/messenger_auth', function(request, response) {
     var identity = resp.first_name;
     var endpoint = 'FBM@' + identity;
     //Let's create a new facebook-messenger Binding for our user
-    createBinding(identity, endpoint, 'facebook-messenger', message.sender.id);
+    createBinding(identity, endpoint, 'facebook-messenger', message.sender.id, response);
   });
 });
 
