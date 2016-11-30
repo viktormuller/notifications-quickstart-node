@@ -15,21 +15,13 @@ app.use(express.static('public'));
 // correctly
 app.get('/', function(request, response) {
 
-  var config =  {
+  response.render('index.jade',{
     TWILIO_ACCOUNT_SID: env.TWILIO_ACCOUNT_SID,
     TWILIO_AUTH_TOKEN: env.TWILIO_AUTH_TOKEN,
     TWILIO_NOTIFICATION_SERVICE_SID: env.TWILIO_NOTIFICATION_SERVICE_SID,
     FACEBOOK_PAGE_ACCESS_TOKEN: env.FACEBOOK_PAGE_ACCESS_TOKEN
-  }
-
-  //Let's check for which environment is your APNS credential configured (development or production).
-  new twilio(env.TWILIO_ACCOUNT_SID,  env.TWILIO_AUTH_TOKEN).notify.v1.credentials(env.TWILIO_APN_CREDENTIAL_SID).fetch().then(function (credential){
-    config.TWILIO_APN_CREDENTIAL_ENV = credential.sandbox === "False" ? "Production" : "Development",
-    response.render('index.jade',config);
-  }).catch(function(error){
-    //If not configured just render the known config
-    response.render('index.jade',config);
   });
+
 });
 
 function createBinding(identity, endpoint, bindingType, address, sandbox, response){
