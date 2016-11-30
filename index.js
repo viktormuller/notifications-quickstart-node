@@ -82,6 +82,10 @@ function createBinding(identity, endpoint, bindingType, address, sandbox, respon
       }
     }).catch(function(error){
       console.log(error);
+      response.status(500).send({
+        error: error,
+        message: "Failed to create binding: " + error
+      });
     });
   } else { //if not APNS binding we can just to ahead and create the Binding
     execCreateBinding();
