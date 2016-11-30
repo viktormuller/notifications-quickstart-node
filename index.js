@@ -14,13 +14,21 @@ app.use(express.static('public'));
 // Basic health check - check environment variables have been configured
 // correctly
 app.get('/', function(request, response) {
-  response.render('index.jade', {
+
+  var config =  {
     TWILIO_ACCOUNT_SID: env.TWILIO_ACCOUNT_SID,
     TWILIO_AUTH_TOKEN: env.TWILIO_AUTH_TOKEN,
     TWILIO_NOTIFICATION_SERVICE_SID: env.TWILIO_NOTIFICATION_SERVICE_SID,
-    TWILIO_APN_CREDENTIAL_SID: env.TWILIO_APN_CREDENTIAL_SID,
-    TWILIO_GCM_CREDENTIAL_SID: env.TWILIO_GCM_CREDENTIAL_SID,
     FACEBOOK_PAGE_ACCESS_TOKEN: env.FACEBOOK_PAGE_ACCESS_TOKEN
+  }
+
+  //Let's check for which environment is your APNS credential configured (development or production).
+  new twilio(env.TWILIO_ACCOUNT_SID,  env.TWILIO_AUTH_TOKEN).notify.v1.credentials(env.TWILIO_APN_CREDENTIAL_SID).fetch().then(function (credential){
+    config.TWILIO_APN_CREDENTIAL_ENV = credential.sandbox === "False" ? "Production" : "Development",
+    response.render('index.jade',config);
+  }).catch(function(error){
+    //If not configured just render the known config
+    response.render('index.jade',config);
   });
 });
 
@@ -31,57 +39,61 @@ function createBinding(identity, endpoint, bindingType, address, sandbox, respon
   // Get a reference to the user notification service instance
   var service = client.notify.v1.services(env.TWILIO_NOTIFICATION_SERVICE_SID);
 
-  // For APNS bindings let's check if the app's provisioning profile is aligned with that of the configured certificate.
-  //TODO: Please, refactor if necessary to reflect JS best practices
-  if (bindingType === "apn"){
-    var apnCredMatched = false;
-    service.fetch().then(function(serviceObj){
-      client.notify.v1.credentials(serviceObj.apnCredentialSid).fetch()
-      .then(function(credential){
-        if (credential.sandbox !== sandbox){
-          var message = "Mismatched APNS certificate. Make sure you are using a production certificate with production provisioning profile and a development certificate with a development provisioning profile.";
-          console.log(message);
-          console.log("Credential's sandbox value: " + credential.sandbox);
-          console.log("App's sandbox value: " + sandbox);
-          response.status(400).send({
-            message: message
-          });
-        } else{
-          apnCredMatched = true;
-        }
-      }).catch(function(error){
-        console.log(error);
+  var execCreateBinding = function(){
+
+    service.bindings.create({
+      "endpoint": endpoint,
+      "identity": identity,
+      "bindingType": bindingType,
+      "address": address
+    }).then(function(binding) {
+      var message = 'Binding created!';
+      console.log(binding);
+      // Send a JSON response indicating success
+      response.send({
+        message: message
       });
-    }).catch(function (error){
-      console.log(error);
+    }).catch(function(error) {
+      var message = 'Failed to create binding: ' + error;
+      console.log(message);
+
+      // Send a JSON response indicating an internal server error
+      response.status(500).send({
+        error: error,
+        message: message
+      });
     });
-    if (!apnCredMatched){
-      return;
-    }
+
   }
 
-  service.bindings.create({
-    "endpoint": endpoint,
-    "identity": identity,
-    "bindingType": bindingType,
-    "address": address
-  }).then(function(binding) {
-    var message = 'Binding created!';
-    console.log(binding);
-    // Send a JSON response indicating success
-    response.send({
-      message: message
-    });
-  }).catch(function(error) {
-    var message = 'Failed to create binding: ' + error;
-    console.log(message);
+  // For APNS bindings let's check if the app's provisioning profile is aligned
+  // with that of the configured certificate.
+  // Typically this check is unnecessary and wasteful in production but very
+  // useful if you are doing this the first time so we recommend removing it
+  // before deploying to production.
+  if (bindingType === "apn"){
 
-    // Send a JSON response indicating an internal server error
-    response.status(500).send({
-      error: error,
-      message: message
+    service.fetch().then(function(serviceObj){
+      return client.notify.v1.credentials(serviceObj.apnCredentialSid).fetch();
+    }).then(function(credential){
+      if (credential.sandbox !== sandbox){
+        var message = "Mismatched APNS certificate. Make sure you are using a production certificate with a production provisioning profile and a development certificate with a development provisioning profile.";
+        console.log(message);
+        console.log("Credential's sandbox value: " + credential.sandbox);
+        console.log("App's sandbox value: " + sandbox);
+        response.status(400).send({
+          error: "52134",
+          message: message
+        });
+      } else{
+        execCreateBinding();
+      }
+    }).catch(function(error){
+      console.log(error);
     });
-  });
+  } else { //if not APNS binding we can just to ahead and create the Binding
+    execCreateBinding();
+  }
 }
 
 //Create a binding using device properties
