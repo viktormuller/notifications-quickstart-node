@@ -13,7 +13,7 @@ Twilio Notification_Service SID | Use the create_service.js script to generate t
 
 # Setting up the Node.js Application
 
-Edit the `config.js` file with the four configuration parameters we gathered from above, plus your Twilio account's auth token.
+Edit the `config.js` file with the Twilio account and notification service configuration parameters we gathered from above, plus your Twilio account's auth token.
 
 Next, we need to install our dependencies from npm:
 
@@ -27,13 +27,13 @@ Now we should be all set! Run the application using the `npm` command.
 npm start
 ```
 
-Your application should now be running at [http://localhost:3000](http://localhost:3000). 
+Your application should now be running at [http://localhost:3000](http://localhost:3000).
 
 # Usage
 
-When your app receives a 'registration' in the form of a POST request to the /register endpoint from a mobile client, it will create a binding. A binding is the address Twilio gives your app installation. It lets our service know where to send notifications.  
+When your app receives a 'registration' in the form of a POST request to the /register endpoint from a mobile client, it will create a binding. A binding is the address Twilio gives your app installation. It lets our service know where to send notifications.
 
-To send a notification to the client run the notify script 
+To send a notification to the client run the notify script
 
 ```bash
   node notify IDENTITY_HERE
