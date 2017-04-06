@@ -1,19 +1,27 @@
 # Notifications Quickstart for Node.js
 
 This application should give you a ready-made starting point for integrating notifications into your
-own apps with Twilio Notifications. Before we begin, we need to collect
- the credentials we need to run the application - you will need credentials for either (or both) of Apple or Google's push notification service:
+own apps with Twilio Notifications.
+
+# Configure Twilio account information
+Before we begin, we need to collect the credentials we need to run the application.
 
 Credential | Description
 ---------- | -----------
-Twilio Account SID | Your main Twilio account identifier - [find it on your dashboard](https://www.twilio.com/user/account/settings).
-Twilio APN Credential SID | Adds iOS notification ability to your app - [generate one here](https://www.twilio.com/user/account/ip-messaging/credentials). You'll need to provision your APN push credentials to generate this. See [this](https://www.twilio.com/docs/api/ip-messaging/guides/push-notifications-ios) guide on how to do that. (Optional)
-Twilio GCM Credential SID | Adds Android/GCM notification ability to your app - [generate one here](https://www.twilio.com/user/account/ip-messaging/credentials). You'll need to provision your GCM push credentials to generate this. See [this](https://www.twilio.com/docs/api/ip-messaging/guides/push-notifications-android) guide on how to do that. (Optional)
+Twilio Account SID | Your main Twilio account identifier - [find it in the console](https://www.twilio.com/console).
 Twilio Notification_Service SID | Use the create_service.js script to generate this. Just run 'node create_service.js' in your terminal, after you add the above configuration values to the `config.js` file.
+Twilio Account Auth Token | Your Twilio authentication token - [find it in the console](https://www.twilio.com/console)
+
+# Configure Notify push credentials
+You will need to create a Notify Service through the [Twilio Console](https://www.twilio.com/console/notify/services), and add at least one credential on the [Mobile Push Credential screen](https://www.twilio.com/console/notify/credentials) (such as Apple Push Notification Service or Firebase Cloud Messaging for Android) to send notifications using Notify.
+
+For help with setting up native mobile push credentials, please see the following guides:
+[Set up push credentials for iOS push notifications](https://www.twilio.com/docs/api/chat/guides/push-notifications-ios)
+[Set up push credentials for Android push notifications](https://www.twilio.com/docs/api/chat/guides/push-notifications-android)
 
 # Setting up the Node.js Application
 
-Edit the `config.js` file with the Twilio account and notification service configuration parameters we gathered from above, plus your Twilio account's auth token.
+Edit the `config.js` file with the Twilio account information collected in the first step above, including your Twilio account SID, Notification Service SID, and Twilio auth token.
 
 Next, we need to install our dependencies from npm:
 
