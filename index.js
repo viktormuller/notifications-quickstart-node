@@ -64,8 +64,8 @@ app.post('/messenger_auth', function(request, response) {
   //Extract the request received from Facebook
   var message = request.body.entry[0].messaging[0];
   console.log(message);
-  // Set user identity using their fb id
-  var identity = message.recipient.id;
+  // Set user identity using their fb messenger user id
+  var identity = message.sender.id;
   var endpoint = 'FBM@' + identity;
   //Let's create a new facebook-messenger Binding for our user
   createBinding(identity, endpoint, 'facebook-messenger', message.sender.id, response);
