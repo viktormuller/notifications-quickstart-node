@@ -32,13 +32,6 @@ html
           td.unset Not Configured
 
       tr
-        th TWILIO_APN_CREDENTIAL_SID
-        if TWILIO_APN_CREDENTIAL_SID
-          td.good= TWILIO_APN_CREDENTIAL_SID
-        else
-          td.unset Not Configured
-
-      tr
         th TWILIO_ACCOUNT_SID
         if TWILIO_ACCOUNT_SID
           td.good= TWILIO_ACCOUNT_SID
@@ -48,13 +41,6 @@ html
       tr
         th TWILIO_AUTH_TOKEN
         if TWILIO_AUTH_TOKEN
-          td.good Secret token configured
-        else
-          td.unset Not Configured
-
-      tr
-        th FACEBOOK_PAGE_ACCESS_TOKEN
-        if FACEBOOK_PAGE_ACCESS_TOKEN
           td.good Secret token configured
         else
           td.unset Not Configured
