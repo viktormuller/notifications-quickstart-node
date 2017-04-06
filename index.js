@@ -63,17 +63,12 @@ app.post('/register', function(request, response) {
 app.post('/messenger_auth', function(request, response) {
   //Extract the request received from Facebook
   var message = request.body.entry[0].messaging[0];
-
   console.log(message);
-
-  //Let's find out the first name of the user so that we can notify him/her using that later
-  fb = new FB.Facebook({});
-  FB.api('/' + message.sender.id, {access_token: env.FACEBOOK_PAGE_ACCESS_TOKEN}, function(resp){
-    var identity = resp.first_name;
-    var endpoint = 'FBM@' + identity;
-    //Let's create a new facebook-messenger Binding for our user
-    createBinding(identity, endpoint, 'facebook-messenger', message.sender.id, response);
-  });
+  // Set user identity using their fb messenger user id
+  var identity = message.sender.id;
+  var endpoint = 'FBM@' + identity;
+  //Let's create a new facebook-messenger Binding for our user
+  createBinding(identity, endpoint, 'facebook-messenger', message.sender.id, response);
 });
 
 //Verification endpoint for Facebook needed to register a webhook.
